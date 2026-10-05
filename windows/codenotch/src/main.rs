@@ -1,6 +1,7 @@
 #![cfg_attr(all(not(debug_assertions), windows), windows_subsystem = "windows")]
 
 mod autostart;
+mod litellm;
 mod backdrop;
 mod config;
 mod doctor;
@@ -1789,6 +1790,7 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             get_state,
+            litellm::get_litellm,
             get_usage,
             claude_sign_in,
             get_claude_auth,
@@ -1882,6 +1884,7 @@ fn main() {
             server::start(handle.clone(), port);
             watcher::start(handle.clone());
             usage::start(handle.clone());
+            litellm::start(handle.clone());
             codex::start(handle.clone());
             cursor::start(handle.clone());
             grok::start(handle.clone());

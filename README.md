@@ -1,3 +1,12 @@
+# Codenotch Extended
+
+Fork com chat VS Code, memória local de projeto e gateway LiteLLM com fallback.
+Veja o [guia de instalação e uso](docs/multi-provider.md) e a
+[extensão VS Code](multi-provider-agent-chat/README.md).
+A integração de anéis está no app Windows; a documentação original segue abaixo.
+
+---
+
 <div align="center">
 
 ![Codenotch](docs/design/codenotch-banner.png)

@@ -1,0 +1,34 @@
+# Model IDs come from your provider account; do not assume a free tier or fixed quota.
+model_list:
+  - model_name: nvidia-nim
+    litellm_params:
+      model: os.environ/NVIDIA_NIM_MODEL
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: os.environ/NVIDIA_NIM_API_KEY
+  - model_name: claude-sonnet
+    litellm_params:
+      model: os.environ/ANTHROPIC_MODEL
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: openai
+    litellm_params:
+      model: os.environ/OPENAI_MODEL
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gemini
+    litellm_params:
+      model: os.environ/GEMINI_MODEL
+      api_key: os.environ/GEMINI_API_KEY
+router_settings:
+  routing_strategy: simple-shuffle
+  num_retries: 3
+  timeout: 30
+  allowed_fails: 3
+  cooldown_time: 60
+  fallbacks:
+    - nvidia-nim: [claude-sonnet, openai, gemini]
+    - claude-sonnet: [openai, gemini]
+    - openai: [gemini]
+litellm_settings:
+  callbacks: [prometheus]
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  require_auth_for_metrics_endpoint: true

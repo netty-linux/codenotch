@@ -1,0 +1,45 @@
+name: Multi-provider extension
+on:
+  push:
+    branches: [feature/multi-provider-agent]
+  pull_request:
+    paths: ['multi-provider-agent-chat/**', 'litellm_config.yaml', 'Scripts/test-fallback.py', '.github/workflows/multi-provider.yml']
+jobs:
+  native:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: windows
+      - run: cargo test --locked
+        working-directory: windows
+      - run: node scripts/check-ui-scripts.mjs
+        working-directory: windows
+  extension:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+        working-directory: multi-provider-agent-chat
+      - run: npm test
+        working-directory: multi-provider-agent-chat
+      - run: npm run package
+        working-directory: multi-provider-agent-chat
+      - uses: actions/upload-artifact@v4
+        with:
+          name: multi-provider-chat
+          path: multi-provider-agent-chat/*.vsix
+  fallback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install -r requirements-proxy.txt
+      - run: python Scripts/test-fallback.py --proxy

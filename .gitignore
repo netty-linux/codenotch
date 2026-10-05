@@ -9,3 +9,13 @@ xcuserdata/
 .swiftpm/
 .agents/
 .forgeguard/
+.env
+.env.*
+!.env.example
+.venv/
+node_modules/
+out/
+*.vsix
+target/
+.context/sessions/
+.context/decisions.md

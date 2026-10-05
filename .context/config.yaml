@@ -1,0 +1,9 @@
+project_name: Codenotch Extended
+github_repo: netty-linux/codenotch
+context_files:
+  - README.md
+  - docs/multi-provider.md
+  - TODO.md
+  - .context/decisions.md
+track_issues: true
+track_prs: true

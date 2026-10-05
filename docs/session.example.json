@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "sessionId": "00000000-0000-4000-8000-000000000001",
+  "model": "nvidia-nim",
+  "history": [
+    {"role":"user","content":"Qual é a próxima tarefa?","timestamp":"2026-10-05T12:00:00Z"},
+    {"role":"assistant","content":"Validar o fluxo de restauração de sessão.","timestamp":"2026-10-05T12:00:01Z","model":"example-model"}
+  ],
+  "context": "Example snapshot; real snapshots contain normalized project JSON.",
+  "contextHash": "example-only"
+}

@@ -1100,8 +1100,13 @@ function claudeCells(){
       .map(w=>Object.assign({},w,{id:String(w.id).split('@')[0]}))})
   }));
 }
+let litellmCells=[];
+function receiveLiteLLM(cells){litellmCells=Array.isArray(cells)?cells:[];renderRing();if(card.classList.contains('show'))renderCard();}
+listen('litellm',e=>receiveLiteLLM(e.payload)).catch(()=>{});
+invoke('get_litellm').then(receiveLiteLLM).catch(()=>{});
 function providers(){
   const list=claudeCells();
+  list.push(...litellmCells);
   if(codexSnap.status!=='absent') list.push({id:'codex',base:'codex',name:'Codex',glyph:'Cx',snap:codexSnap});
   if(glmSnap.status!=='absent') list.push({id:'glm',base:'glm',name:'z.ai',glyph:'Z.ai',snap:glmSnap});
   if(opencodeSnap.status!=='absent') list.push({id:'opencode',base:'opencode',name:'OpenCode',glyph:'OC',snap:opencodeSnap});
@@ -1110,7 +1115,7 @@ function providers(){
   if(copilotSnap.status!=='absent') list.push({id:'copilot',base:'copilot',name:'GitHub Copilot',glyph:'Cp',snap:copilotSnap});
   if(agSnap.status!=='absent') list.push({id:'gemini',base:'gemini',name:'Antigravity',glyph:'Ag',snap:agSnap});
   if(Array.isArray(notchSlots)&&notchSlots.length){
-    const picked=list.filter(p=>!!slotFor(p.base));
+    const picked=list.filter(p=>p.base==='litellm'||!!slotFor(p.base));
     // Never leave the notch with nothing in it: an empty result means the choice no longer matches
     // any available provider, so fall back to showing everything rather than an empty pill.
     if(picked.length) return picked;
@@ -1202,6 +1207,10 @@ function dashedArc(r,frac,color,width,extra=''){
 
 function renderRing(){
   const ps=providers();
+  // Extra gateway routes must fit inside the native window on every screen edge.
+  const horizontal=['top','bottom'].includes(document.body.dataset.edge);
+  const available=(horizontal?window.innerWidth:window.innerHeight)-160;
+  pill.style.zoom=litellmCells.length?String(Math.min(1,Math.max(0.1,available/(ps.length*84+36)))):'';
   // Rebuild the DOM only when the structure changes (never swap the element under the cursor)
   const want=ps.map(p=>p.id+':'+(glyphs[p.base]?glyphs[p.base].kind:'-')).join(',');
   if(pill.dataset.cells!==want){
@@ -1243,7 +1252,7 @@ function renderRing(){
     if(p.snap.status==='needsAuth'||p.snap.status==='none') pct.textContent='—';
     else if(h && h.count!=null) pct.textContent='~'+h.count;
     else if(h) pct.textContent=(h.derived?'~':'')+pctText(h.used)+'%';
-    else pct.textContent=p.snap.windows.length?'—':'…'; // its declared window is missing: a dash, not a wait
+    else pct.textContent=p.base==='litellm'||p.snap.windows.length?'—':'…'; // unknown LiteLLM quotas are not zero
     glyph.classList.toggle('dim', !!(h && h.used>=1));
     wrap.classList.toggle('stale', staleOf(p.snap));
   }
